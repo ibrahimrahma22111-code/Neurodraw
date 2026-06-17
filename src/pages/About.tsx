@@ -1,6 +1,4 @@
-import { Link } from 'react-router-dom'
 import { MarketingNavbar } from '../components/MarketingNavbar'
-import { Logo } from '../components/Logo'
 import { Chatbot } from '../components/Chatbot'
 
 export function About() {

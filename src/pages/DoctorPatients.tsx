@@ -1,7 +1,6 @@
 import { Card, SectionTitle, Pill, Badge } from '../components/UI'
 import { useState, useMemo } from 'react'
 import { usePatients } from '../context/PatientContext'
-import type { Patient } from '../context/PatientContext'
 
 export function DoctorPatients() {
   const { patients, getPatientById } = usePatients()

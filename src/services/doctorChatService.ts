@@ -17,7 +17,7 @@ const mockDoctorResponses: string[] = [
     "Your latest test results look stable.",
 ];
 
-const mockSendMessage = async (text: string): Promise<ChatResponse> => {
+const mockSendMessage = async (): Promise<ChatResponse> => {
     return new Promise((resolve) => {
         setTimeout(() => {
             resolve({
@@ -48,7 +48,7 @@ export const doctorChatService = {
                 throw error;
             }
         } else {
-            const response = await mockSendMessage(message);
+            const response = await mockSendMessage();
             return {
                 id: response.id,
                 sender: response.sender,

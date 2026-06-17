@@ -1,4 +1,5 @@
-import { FormEvent, useState, useEffect, useImperativeHandle, forwardRef } from 'react'
+import { useState, useEffect, useImperativeHandle, forwardRef } from 'react'
+import type { FormEvent } from 'react'
 import { Card, SectionTitle, Badge } from './UI'
 
 export type ChatParticipant = 'patient' | 'doctor' | 'ai' | 'doctor-network'

@@ -6,11 +6,6 @@ interface LoginResponse {
     token: string;
 }
 
-interface AuthStorage {
-    token: string | null;
-    user: User | null;
-}
-
 // Helper to manage local storage
 const storage = {
     getToken: () => localStorage.getItem('auth_token'),

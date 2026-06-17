@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, ReactNode } from 'react'
+import { createContext, useContext, useState } from 'react'
+import type { ReactNode } from 'react'
 
 export interface Patient {
   id: string
@@ -69,7 +70,6 @@ export function PatientProvider({ children }: { children: ReactNode }) {
             ...testResult,
             date: new Date().toLocaleDateString(),
           }
-          const now = new Date()
           return {
             ...patient,
             tremorScore: testResult.tremorScore,
