@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import type { UserRole } from '../types'
 import { Logo } from '../components/Logo'
+import { getLoginErrorMessage } from '../utils/authErrors'
 
 export function AuthLogin() {
   const { login } = useAuth()
@@ -24,7 +25,7 @@ export function AuthLogin() {
       navigate(role === 'patient' ? '/patient' : '/doctor')
     } catch (err) {
       console.error(err)
-      setError('Unable to login. Please check your credentials.')
+      setError(getLoginErrorMessage(err))
     } finally {
       setIsSubmitting(false)
     }
@@ -90,6 +91,12 @@ export function AuthLogin() {
             </div>
 
             {error ? <p className="text-sm text-rose-600">{error}</p> : null}
+
+            <p className="rounded-xl bg-slate-50 px-4 py-3 text-xs text-slate-600">
+              Demo accounts: <span className="font-medium">patient@demo.com</span> or{' '}
+              <span className="font-medium">doctor@demo.com</span> — password{' '}
+              <span className="font-medium">demo1234</span> (match the role toggle).
+            </p>
 
             <button
               type="submit"

@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext'
 import { usePatients } from '../context/PatientContext'
 import type { UserRole } from '../types'
 import { Logo } from '../components/Logo'
+import { getSignupErrorMessage } from '../utils/authErrors'
 
 export function AuthSignup() {
   const { signup } = useAuth()
@@ -37,7 +38,7 @@ export function AuthSignup() {
       navigate(role === 'patient' ? '/patient' : '/doctor')
     } catch (err) {
       console.error(err)
-      setError('Unable to create account. Please try again.')
+      setError(getSignupErrorMessage(err))
     } finally {
       setIsSubmitting(false)
     }

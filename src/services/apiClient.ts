@@ -4,14 +4,30 @@ interface RequestOptions extends RequestInit {
     headers?: Record<string, string>;
 }
 
-class ApiError extends Error {
+export class ApiError extends Error {
     status: number;
+    detail?: string;
 
-    constructor(message: string, status: number) {
+    constructor(message: string, status: number, detail?: string) {
         super(message);
         this.status = status;
+        this.detail = detail;
         this.name = 'ApiError';
     }
+}
+
+export function isNetworkError(err: unknown): boolean {
+    if (err instanceof TypeError) return true;
+    if (err instanceof Error) {
+        const message = err.message.toLowerCase();
+        return (
+            message.includes('failed to fetch') ||
+            message.includes('networkerror') ||
+            message.includes('network request failed') ||
+            message.includes('load failed')
+        );
+    }
+    return false;
 }
 
 async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
@@ -33,7 +49,18 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
         const response = await fetch(url, config);
 
         if (!response.ok) {
-            throw new ApiError(`API Error: ${response.statusText}`, response.status);
+            let detail: string | undefined;
+            try {
+                const body = (await response.json()) as { detail?: string | Array<{ msg: string }> };
+                if (typeof body.detail === 'string') {
+                    detail = body.detail;
+                } else if (Array.isArray(body.detail)) {
+                    detail = body.detail.map((item) => item.msg).join(', ');
+                }
+            } catch {
+                // Response body is not JSON
+            }
+            throw new ApiError(detail ?? `API Error: ${response.statusText}`, response.status, detail);
         }
 
         // Handle empty responses

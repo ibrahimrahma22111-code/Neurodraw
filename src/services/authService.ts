@@ -1,4 +1,4 @@
-import { apiClient } from './apiClient';
+import { apiClient, isNetworkError } from './apiClient';
 import type { User, UserRole } from '../types';
 
 interface LoginResponse {
@@ -23,31 +23,69 @@ const storage = {
     }
 };
 
-export const authService = {
-    // Login
-    async login(payload: { email: string; password: string; role: UserRole }): Promise<User> {
-        // Check if we should use valid API or mock
-        const useRealApi = import.meta.env.VITE_USE_REAL_AUTH_API === 'true';
-
-        if (useRealApi) {
-            const response = await apiClient.post<LoginResponse>('/auth/login', payload);
-            storage.setToken(response.token);
-            storage.setUser(response.user);
-            return response.user;
-        } else {
-            // Mock login
-            await new Promise(resolve => setTimeout(resolve, 800));
+function mockLogin(payload: { email: string; password: string; role: UserRole }): Promise<User> {
+    return new Promise((resolve) => {
+        setTimeout(() => {
             const mockUser: User = {
                 id: 'mock-user-id',
                 name: payload.role === 'patient' ? 'Demo Patient' : 'Demo Doctor',
                 email: payload.email,
                 role: payload.role,
             };
-
-            // We simulate a token
             storage.setToken('mock-jwt-token');
             storage.setUser(mockUser);
-            return mockUser;
+            resolve(mockUser);
+        }, 800);
+    });
+}
+
+function mockSignup(payload: { name: string; email: string; password: string; role: UserRole }): Promise<User> {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            const mockUser: User = {
+                id: 'mock-user-id-' + Date.now(),
+                name: payload.name,
+                email: payload.email,
+                role: payload.role,
+            };
+            storage.setToken('mock-jwt-token');
+            storage.setUser(mockUser);
+            resolve(mockUser);
+        }, 800);
+    });
+}
+
+async function loginWithApi(payload: { email: string; password: string; role: UserRole }): Promise<User> {
+    const response = await apiClient.post<LoginResponse>('/auth/login', payload);
+    storage.setToken(response.token);
+    storage.setUser(response.user);
+    return response.user;
+}
+
+async function signupWithApi(payload: { name: string; email: string; password: string; role: UserRole }): Promise<User> {
+    const response = await apiClient.post<LoginResponse>('/auth/signup', payload);
+    storage.setToken(response.token);
+    storage.setUser(response.user);
+    return response.user;
+}
+
+export const authService = {
+    // Login
+    async login(payload: { email: string; password: string; role: UserRole }): Promise<User> {
+        const useRealApi = import.meta.env.VITE_USE_REAL_AUTH_API === 'true';
+
+        if (!useRealApi) {
+            return mockLogin(payload);
+        }
+
+        try {
+            return await loginWithApi(payload);
+        } catch (err) {
+            if (import.meta.env.DEV && isNetworkError(err)) {
+                console.warn('Auth API unavailable in dev; using mock login. Start the backend with: npm run dev:backend');
+                return mockLogin(payload);
+            }
+            throw err;
         }
     },
 
@@ -55,24 +93,18 @@ export const authService = {
     async signup(payload: { name: string; email: string; password: string; role: UserRole }): Promise<User> {
         const useRealApi = import.meta.env.VITE_USE_REAL_AUTH_API === 'true';
 
-        if (useRealApi) {
-            const response = await apiClient.post<LoginResponse>('/auth/signup', payload);
-            storage.setToken(response.token);
-            storage.setUser(response.user);
-            return response.user;
-        } else {
-            // Mock signup
-            await new Promise(resolve => setTimeout(resolve, 800));
-            const mockUser: User = {
-                id: 'mock-user-id-' + Date.now(),
-                name: payload.name,
-                email: payload.email,
-                role: payload.role,
-            };
+        if (!useRealApi) {
+            return mockSignup(payload);
+        }
 
-            storage.setToken('mock-jwt-token');
-            storage.setUser(mockUser);
-            return mockUser;
+        try {
+            return await signupWithApi(payload);
+        } catch (err) {
+            if (import.meta.env.DEV && isNetworkError(err)) {
+                console.warn('Auth API unavailable in dev; using mock signup. Start the backend with: npm run dev:backend');
+                return mockSignup(payload);
+            }
+            throw err;
         }
     },
 
