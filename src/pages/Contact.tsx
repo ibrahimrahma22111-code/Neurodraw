@@ -20,8 +20,8 @@ export function Contact() {
 
             <div className="space-y-8">
               <ContactInfo title="Email Us" value="support@neurodraw.ai" icon="✉️" />
-              <ContactInfo title="Call Us" value="+1 (555) 123-4567" icon="📞" />
-              <ContactInfo title="Visit Us" value="123 Innovation Dr, Tech City, TC 90210" icon="📍" />
+              <ContactInfo title="Call Us" value="+201030951675" icon="📞" />
+              <ContactInfo title="Visit Us" value="New Mansoura, New Mansoura University" icon="📍" />
             </div>
           </div>
 
