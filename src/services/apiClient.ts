@@ -18,13 +18,19 @@ export class ApiError extends Error {
 
 export function isNetworkError(err: unknown): boolean {
     if (err instanceof TypeError) return true;
+    // Treat proxy/gateway errors as unreachable-server errors
+    if (err instanceof ApiError && (err.status === 0 || err.status === 502 || err.status === 503 || err.status === 504)) return true;
     if (err instanceof Error) {
         const message = err.message.toLowerCase();
         return (
             message.includes('failed to fetch') ||
             message.includes('networkerror') ||
             message.includes('network request failed') ||
-            message.includes('load failed')
+            message.includes('load failed') ||
+            message.includes('econnreset') ||
+            message.includes('econnrefused') ||
+            message.includes('fetch failed') ||
+            message.includes('unable to connect')
         );
     }
     return false;

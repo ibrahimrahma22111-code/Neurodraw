@@ -1,7 +1,12 @@
 import { ApiError, isNetworkError } from '../services/apiClient'
 
+const SERVER_DOWN_MSG = 'Cannot reach the server. Start the backend with: npm run dev:backend'
+
 export function getLoginErrorMessage(err: unknown): string {
   if (err instanceof ApiError) {
+    if (err.status === 502 || err.status === 503 || err.status === 504) {
+      return err.detail ?? SERVER_DOWN_MSG
+    }
     if (err.detail === 'Role mismatch') {
       return 'Role mismatch. Select the same role you used when creating your account.'
     }
@@ -12,7 +17,7 @@ export function getLoginErrorMessage(err: unknown): string {
   }
 
   if (isNetworkError(err)) {
-    return 'Cannot reach the server. Start the backend with: npm run dev:backend'
+    return SERVER_DOWN_MSG
   }
 
   return 'Unable to sign in. Please try again.'
@@ -20,6 +25,9 @@ export function getLoginErrorMessage(err: unknown): string {
 
 export function getSignupErrorMessage(err: unknown): string {
   if (err instanceof ApiError) {
+    if (err.status === 502 || err.status === 503 || err.status === 504) {
+      return err.detail ?? SERVER_DOWN_MSG
+    }
     if (err.detail === 'Email already registered') {
       return 'This email is already registered. Try signing in instead.'
     }
@@ -27,7 +35,7 @@ export function getSignupErrorMessage(err: unknown): string {
   }
 
   if (isNetworkError(err)) {
-    return 'Cannot reach the server. Start the backend with: npm run dev:backend'
+    return SERVER_DOWN_MSG
   }
 
   return 'Unable to create account. Please try again.'
