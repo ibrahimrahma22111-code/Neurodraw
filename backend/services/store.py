@@ -63,6 +63,13 @@ def seed_demo_users() -> None:
                 type="Spiral Test",
                 result="Low Tremor",
                 notes="Steady usage of pen.",
+                analysis=SpiralAnalysisResponse(
+                    tremorScore=12,
+                    smoothness=88,
+                    symmetry=91,
+                    speed=4,
+                    parkinsonIndicator="low",
+                ),
             ),
             HistoryItem(
                 id="h2",
@@ -70,6 +77,13 @@ def seed_demo_users() -> None:
                 type="Spiral Test",
                 result="Moderate Tremor",
                 notes="Slight deviation in outer loops.",
+                analysis=SpiralAnalysisResponse(
+                    tremorScore=38,
+                    smoothness=62,
+                    symmetry=75,
+                    speed=3,
+                    parkinsonIndicator="moderate",
+                ),
             ),
         ]
         state.notifications_by_user[uid] = [
