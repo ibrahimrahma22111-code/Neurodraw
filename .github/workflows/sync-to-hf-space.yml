@@ -22,8 +22,11 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git lfs install --local
           git branch -D hf-space-sync 2>/dev/null || true
           git subtree split --prefix=backend -b hf-space-sync
+          git checkout hf-space-sync
+          git lfs migrate import --include="*.h5,*.joblib"
           HF_TOKEN_CLEAN=$(printf '%s' "$HF_TOKEN" | tr -d '[:space:]')
           HF_SPACE_CLEAN=$(printf '%s' "$HF_SPACE" | tr -d '[:space:]')
           git push "https://user:${HF_TOKEN_CLEAN}@huggingface.co/spaces/${HF_SPACE_CLEAN}" hf-space-sync:main --force
