@@ -2,14 +2,12 @@ import type { FormEvent } from 'react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { usePatients } from '../context/PatientContext'
 import type { UserRole } from '../types'
 import { Logo } from '../components/Logo'
 import { getSignupErrorMessage } from '../utils/authErrors'
 
 export function AuthSignup() {
   const { signup } = useAuth()
-  const { addPatient } = usePatients()
   const navigate = useNavigate()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -25,16 +23,6 @@ export function AuthSignup() {
 
     try {
       await signup({ name, email, password, role })
-      
-      // If patient signs up, add them to patient list
-      if (role === 'patient') {
-        addPatient({
-          name,
-          email,
-          age: undefined, // Can be added later
-        })
-      }
-      
       navigate(role === 'patient' ? '/patient' : '/doctor')
     } catch (err) {
       console.error(err)

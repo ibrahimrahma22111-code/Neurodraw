@@ -1,6 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
-import { PatientProvider } from './context/PatientContext'
 import { Landing } from './pages/Landing'
 import { AuthLogin } from './pages/AuthLogin'
 import { AuthSignup } from './pages/AuthSignup'
@@ -24,10 +23,9 @@ import { ForClinicians } from './pages/ForClinicians'
 function App() {
   return (
     <AuthProvider>
-      <PatientProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Landing />} />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Landing />} />
             <Route path="/login" element={<AuthLogin />} />
             <Route path="/signup" element={<AuthSignup />} />
             <Route path="/about" element={<About />} />
@@ -72,8 +70,7 @@ function App() {
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-        </BrowserRouter>
-      </PatientProvider>
+      </BrowserRouter>
     </AuthProvider>
   )
 }

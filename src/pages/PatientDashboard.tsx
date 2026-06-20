@@ -3,8 +3,6 @@ import { Card, SectionTitle, Pill, Badge } from '../components/UI'
 import { Chat, type ChatHandle, type ChatMessage } from '../components/Chat'
 import { ImageUpload } from '../components/ImageUpload'
 import { useState, useEffect, useRef } from 'react'
-import { useAuth } from '../context/AuthContext'
-import { usePatients } from '../context/PatientContext'
 import { historyService } from '../services/historyService'
 import { analysisService } from '../services/analysisService'
 import { notificationService, type Notification } from '../services/notificationService'
@@ -22,8 +20,6 @@ interface SpiralAnalysis {
 }
 
 export function PatientDashboard() {
-  const { user } = useAuth()
-  const { updatePatientTest } = usePatients()
   const [latestAnalysis, setLatestAnalysis] = useState<SpiralAnalysis | null>(null)
   const [testHistory, setTestHistory] = useState<SpiralAnalysis[]>([])
   const [notifications, setNotifications] = useState<Notification[]>([])
@@ -86,11 +82,6 @@ export function PatientDashboard() {
     const analysisWithDate = { ...analysis, date: new Date().toLocaleDateString() }
     setLatestAnalysis(analysisWithDate)
     setTestHistory((prev) => [analysisWithDate, ...prev.slice(0, 4)])
-
-    // Save to patient context if patient exists
-    if (user) {
-      updatePatientTest(user.id, analysis)
-    }
 
     try {
       await analysisService.saveToHistory(analysis)
