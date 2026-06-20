@@ -1,3 +1,13 @@
+---
+title: NeuroDraw Backend
+emoji: 🧠
+colorFrom: blue
+colorTo: purple
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # NeuroDraw Backend
 
 FastAPI server for the NeuroDraw React app: authentication, spiral analysis, patient history, notifications, and chat.
