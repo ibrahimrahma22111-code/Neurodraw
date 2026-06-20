@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, File, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 
 from models.schemas import SpiralAnalyzeRequest, SpiralAnalysisResponse
 from routers.auth import get_current_user_id
+from services.ml_spiral_analyzer import analyze_image_bytes
 from services.spiral_analyzer import analyze_points
 
 router = APIRouter(prefix="/spiral", tags=["spiral"])
@@ -26,12 +27,10 @@ async def analyze_image(
     file: UploadFile = File(...),
     _user_id: str = Depends(get_current_user_id),
 ):
-    """Placeholder for image-based analysis — returns sample metrics until CV pipeline is added."""
-    await file.read()
-    return SpiralAnalysisResponse(
-        tremorScore=35,
-        smoothness=65,
-        symmetry=70,
-        speed=0,
-        parkinsonIndicator="moderate",
-    )
+    image_bytes = await file.read()
+    try:
+        return analyze_image_bytes(image_bytes)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=503, detail=f"Model not available: {exc}") from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc

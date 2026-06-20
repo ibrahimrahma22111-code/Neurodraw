@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from config import settings
 from routers import auth, chat, notifications, patient, spiral
+from services.ml_spiral_analyzer import load_ml_pipeline
 from services.store import seed_demo_users
 
 app = FastAPI(
@@ -14,7 +15,7 @@ app = FastAPI(
 origins = [o.strip() for o in settings.cors_origins.split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins or ["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -31,6 +32,7 @@ app.include_router(chat.router, prefix=api)
 @app.on_event("startup")
 def on_startup():
     seed_demo_users()
+    load_ml_pipeline()
 
 
 @app.get("/health")
