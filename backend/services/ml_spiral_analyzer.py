@@ -141,13 +141,16 @@ def analyze_image_bytes(image_bytes: bytes) -> SpiralAnalysisResponse:
     if pred_label == "parkinson":
         # Mapped to 50 - 98 range based on model certainty
         tremor_score = int(round(50.0 + prob_parkinson * 48.0))
-        parkinson_indicator: Literal["low", "moderate", "high"] = (
-            "high" if tremor_score > 75 else "moderate"
-        )
     else:
-        # Mapped to 2 - 49 range based on closeness to boundary
+        # Mapped to 0 - 49 range based on closeness to boundary
         tremor_score = int(round(prob_parkinson * 49.0))
-        parkinson_indicator: Literal["low", "moderate", "high"] = "low"
+
+    if tremor_score >= 70:
+        parkinson_indicator: Literal["low", "moderate", "high"] = "high"
+    elif tremor_score >= 25:
+        parkinson_indicator = "moderate"
+    else:
+        parkinson_indicator = "low"
 
     smoothness = 100 - tremor_score
     symmetry = calculate_symmetry(image_bytes)

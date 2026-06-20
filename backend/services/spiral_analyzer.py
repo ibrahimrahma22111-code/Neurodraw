@@ -8,10 +8,10 @@ from typing import Literal
 from models.schemas import SpiralAnalysisResponse, StrokePoint
 
 
-def _indicator(tremor: float, smoothness: float) -> Literal["low", "moderate", "high"]:
-    if tremor > 40 or smoothness < 60:
+def _indicator(tremor: float) -> Literal["low", "moderate", "high"]:
+    if tremor >= 70:
         return "high"
-    if tremor > 20 or smoothness < 80:
+    if tremor >= 25:
         return "moderate"
     return "low"
 
@@ -50,5 +50,5 @@ def analyze_points(points: list[StrokePoint]) -> SpiralAnalysisResponse:
         smoothness=int(round(smoothness)),
         symmetry=int(round(symmetry)),
         speed=int(round(speed)),
-        parkinsonIndicator=_indicator(tremor_score, smoothness),
+        parkinsonIndicator=_indicator(tremor_score),
     )
