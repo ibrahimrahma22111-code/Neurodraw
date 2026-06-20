@@ -21,6 +21,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.middleware("http")
+async def no_store_api_responses(request, call_next):
+    response = await call_next(request)
+    if request.url.path.startswith(settings.api_prefix):
+        response.headers["Cache-Control"] = "no-store"
+    return response
+
 api = settings.api_prefix
 app.include_router(auth.router, prefix=api)
 app.include_router(spiral.router, prefix=api)
