@@ -21,6 +21,7 @@ class UserRecord:
     email: str
     role: str
     password_hash: str
+    created_at: str = field(default_factory=lambda: datetime.now().isoformat())
 
 
 @dataclass
@@ -31,6 +32,7 @@ class AppState:
     ai_chat_by_user: dict[str, list[dict]] = field(default_factory=dict)
     public_chat_sessions: dict[str, list[dict]] = field(default_factory=dict)
     doctor_chat_by_user: dict[str, list[dict]] = field(default_factory=dict)
+    clinical_notes_by_patient: dict[str, str] = field(default_factory=dict)
 
 
 state = AppState()
@@ -92,6 +94,10 @@ def seed_demo_users() -> None:
 
 def user_to_out(record: UserRecord) -> UserOut:
     return UserOut(id=record.id, name=record.name, email=record.email, role=record.role)  # type: ignore[arg-type]
+
+
+def list_patient_records() -> list[UserRecord]:
+    return [record for record in state.users_by_email.values() if record.role == "patient"]
 
 
 def result_label(analysis: SpiralAnalysisResponse) -> str:

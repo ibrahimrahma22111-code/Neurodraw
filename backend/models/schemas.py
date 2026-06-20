@@ -60,6 +60,20 @@ class HistoryCreateRequest(BaseModel):
     notes: str | None = None
 
 
+class PatientSummary(BaseModel):
+    id: str
+    name: str
+    email: str
+    age: int | None = None
+    createdAt: str
+    testHistory: list[HistoryItem] = Field(default_factory=list)
+    clinicalNotes: str = ""
+
+
+class ClinicalNotesUpdateRequest(BaseModel):
+    notes: str
+
+
 class NotificationOut(BaseModel):
     id: str
     title: str
